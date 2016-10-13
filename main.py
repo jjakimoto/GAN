@@ -8,4 +8,8 @@ from model import DCGAN
 import keras
 import tensorflow as tf
 
+def main():
+    config = DCGANconfig()
+    dcgan = DCGAN(config)
+    dcgan.training(data)
 
