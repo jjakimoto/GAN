@@ -59,7 +59,7 @@ class DCGAN(object):
         if self.is_color:
             self.c_dim = config.c_dim
         else:
-            self.c_dim = None
+            self.c_dim = 1
  
         # shape of convolution
         self.k_h, self.k_w, self.d_h, self.d_w =\
@@ -191,7 +191,7 @@ class DCGAN(object):
         s = self.image_size
         c = 1024
         model = Sequential()
-        # conv1tf.reduce_mean(-tf.log(tf.ones_like(self.d_fake) - self.d_fake))
+        # conv1
         model.add(Convolution2D(nb_filter=int(c/8), nb_row=self.k_w, nb_col=self.k_h,
                                 subsample=(self.d_w, self.d_h), border_mode='same',
                                 input_shape=(s, s, self.c_dim)))
