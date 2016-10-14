@@ -13,7 +13,6 @@ import numpy as np
 from PIL import Image
 from os.path import exists, join
 from os import mkdir, makedirs
-from scipy.misc import imresize
 
 from utils import get_images, combine_images, resize_data
 
@@ -138,9 +137,7 @@ class DCGAN(object):
                     % (epoch, batch_count, batch_indices,
                         time.time() - start_time, errD_fake+errD_real, errG))
             
-                    if n:wq
-                    wq
-                    p.mod(epoch + 1, 1) == 0:
+            if np.mod(epoch + 1, 1) == 0:
                 errD_fake = self.d_loss_fake.eval({self.z: batch_z}, session=self.sess)
                 errD_real = self.d_loss_real.eval({self.images: batch_images}, session=self.sess)
                 errG = self.g_loss.eval({self.z: batch_z}, session=self.sess)
@@ -167,8 +164,7 @@ class DCGAN(object):
         else:
 
             self.images = tf.placeholder(tf.float32, [None, self.image_size, self.image_size], name='real_iamges')
-        self.z = tf.placeholder(tf.float32, [None, self.z_dim],
-                                name='z')
+        self.z = tf.placeholder(tf.float32, [None, self.z_dim], name='z')
         
         with tf.device(self.device):
             self.G = self.get_generator_model()
@@ -186,8 +182,11 @@ class DCGAN(object):
 
 
     def get_discriminator_logit_model(self):
-        # to stabilize learning, we will not applay batch normalization to 
-        # the output layer of generator and the input layer of discriminator
+        """return disriminator keras model
+
+        to stabilize learning, we will not applay batch normalization to 
+        the output layer of generator and the input layer of discriminator
+        """
         leak = 0.2
         s = self.image_size
         c = 1024
@@ -220,9 +219,12 @@ class DCGAN(object):
         return model
 
     def get_generator_model(self):
-        # to stabilize learning, we will not applay batch normalization to 
-        # the output layer of generator and the input layer of discriminator
-        # use transpose convolution for generator
+        """ return generator keras model
+
+        to stabilize learning, we will not applay batch normalization to 
+        the output layer of generator and the input layer of discriminator
+        use transpose convolution for generator
+        """
         s = int(self.image_size / 16)
         c = 1024
         model = Sequential()

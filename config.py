@@ -18,7 +18,7 @@ class DCGANConfig(object):
     checkpoint_dir='/path/to/your/checkpoint'
     save_img_dir='/path/to/your/save/directory'
 
-class  mnistConfig(obejct):
+class mnistConfig(obejct):
     device='/gpu:0'
     sample_size = 64
     image_size =28 # shape == (image_size, image_size)

@@ -10,8 +10,9 @@ import keras
 import tensorflow as tf
 
 def main(data_path):
-    config = DCGANconfig()
-    dcgan = DCGAN(configo)
+    # config = DCGANconfig()
+    config = mnistConfig()
+    dcgan = DCGAN(config)
     data = get_data(data_path)
     dcgan.train(data)
 
