@@ -8,11 +8,14 @@ from keras.layers.core import Flatten
 from keras.layers import BatchNormalization
 from keras.layers import Activation
 from keras.layers.advanced_activations import LeakyReLU
+from keras import backend as K
 import numpy as np
 from PIL import Image
 from os.path import exists, join
 from os import mkdir, makedirs
 from scipy.misc import imresize
+
+from utils import get_images, combine_images, resize_data
 
 class DCGAN(object):
     """DCGAN model for generation images
@@ -51,7 +54,13 @@ class DCGAN(object):
         self.batch_size = config.batch_size
         self.learning_rate = config.learning_rate
         self.z_dim = config.z_dim
-        self.c_dim = config.c_dim
+        
+        # color configuration
+        self.is_color = config.is_color
+        if self.is_color:
+            self.c_dim = config.c_dim
+        else:
+            self.c_dim = None
  
         # shape of convolution
         self.k_h, self.k_w, self.d_h, self.d_w =\
@@ -60,7 +69,12 @@ class DCGAN(object):
         self.dataset_name = config.dataset_name
         self.checkpoint_dir = config.checkpoint_dir
         self.save_img_dir = config.save_img_dir
-        self.build_model()
+        # operation will be set in the train mode
+        K.set_learning_phase(1)
+        # all operators will be controlled under self.sess
+        K.set_session(self.sess)
+        with self.sess.as_default():
+            self.build_model()
 
         
     def train(self, data):
@@ -78,12 +92,7 @@ class DCGAN(object):
         tf.initialize_all_variables().run(session=self.sess)
         
         # reshape data for training
-        print ('reshaping data ...')
-        X_train = np.array([imresize(d, [self.image_size, self.image_size]) for d in data
-                           if (len(d.shape)==3 and d.shape[-1] == self.c_dim)])
-    
-        # transform from [0, 255] to [-1, 1]
-        X_train = (X_train.astype(np.float32) - 127.5)/127.5
+        X_train = resize_data(data, self.image_size, self.image_size, self.C_dim, is_color)
 
         sample_z = np.random.uniform(-1, 1, size=(self.sample_size , self.z_dim))
         sample_images = X_train[:self.sample_size]
@@ -103,15 +112,15 @@ class DCGAN(object):
         
         # train model
         count = 0
-        for epoch in tqdm(xrange(self..n_epoch)):
-            batch_indices = len(X_train) // self..batch_size
+        for epoch in tqdm(xrange(self.n_epoch)):
+            batch_indices = len(X_train) // self.batch_size
             shuffle_idx = np.arange(batch_indices)
             random.shuffle(shuffle_idx)
             batch_count = 0
             for idx in iter(shuffle_idx):
                 batch_count += 1
                 count += 1
-                batch = X_train[idx*self..batch_size:(idx + 1)*self..batch_size]
+                batch = X_train[idx*self.batch_size:(idx + 1)*self.batch_size]
                 batch_images = np.array(batch).astype(np.float32)
 
                 batch_z = np.random.uniform(-1, 1, [self..batch_size, self.z_dim]) \
@@ -129,7 +138,9 @@ class DCGAN(object):
                     % (epoch, batch_count, batch_indices,
                         time.time() - start_time, errD_fake+errD_real, errG))
             
-            if np.mod(epoch + 1, 1) == 0:
+                    if n:wq
+                    wq
+                    p.mod(epoch + 1, 1) == 0:
                 errD_fake = self.d_loss_fake.eval({self.z: batch_z}, session=self.sess)
                 errD_real = self.d_loss_real.eval({self.images: batch_images}, session=self.sess)
                 errG = self.g_loss.eval({self.z: batch_z}, session=self.sess)
@@ -151,8 +162,11 @@ class DCGAN(object):
     def build_model(self):
         print ('build model ...')
         # we will use (self.output_size, self.output_size) picture as images
-        self.images = tf.placeholder(tf.float32, [None, self.image_size, self.image_size, self.c_dim],
-                                    name='real_images')
+        if self.is_color:
+            self.images = tf.placeholder(tf.float32, [None, self.image_size, self.image_size, self.c_dim],  name='real_images')
+        else:
+
+            self.images = tf.placeholder(tf.float32, [None, self.image_size, self.image_size], name='real_iamges')
         self.z = tf.placeholder(tf.float32, [None, self.z_dim],
                                 name='z')
         
