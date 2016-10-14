@@ -21,7 +21,7 @@ class DCGANConfig(object):
 class mnistConfig(object):
     device='/gpu:0'
     sample_size = 64
-    image_size =28 # shape == (image_size, image_size)
+    image_size =64 # shape == (image_size, image_size)
     k_h = 5
     k_w = 5
     d_h = 2

@@ -48,13 +48,13 @@ def resize_data(data, width, height, color_dim=None, is_color=True):
             (width, height) otherwisei
     """
     if is_color:
-        converted_data = np.array([imresize(d, [self.image_size, self.image_size]) for d in data
-                                if (len(d.shape)==3 and d.shape[-1] == self.c_dim)])
+        converted_data = np.array([imresize(d, [width, height]) for d in data
+                                if (len(d.shape)==3 and d.shape[-1] == c_dim)])
         # transform from [0, 255] to [-1, 1]
         converted_data = (converted_data.astype(np.float32) - 127.5)/127.5
     else:
         # gray scale data
-        converted_data = np.array([imresize(d, [self.image_size, self.image_size]) for d in data
+        converted_data = np.array([imresize(d, [width, height]) for d in data
                                 if (len(d.shape)==2)])
         # transform from [0, 1] to [-1, 1]
         converted_data = (converted_data.astype(np.float32) - 0.5)/0.5

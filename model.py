@@ -11,9 +11,10 @@ from keras.layers import Activation
 from keras.layers.advanced_activations import LeakyReLU
 from keras import backend as K
 import numpy as np
-from PIL import Image
-from os.path import exists, join
+from os.path import exists, join, basename
 from os import mkdir, makedirs
+import time
+from tqdm import tqdm
 
 from utils import get_images, combine_images, resize_data
 
@@ -52,6 +53,7 @@ class DCGAN(object):
         self.sample_size = config.sample_size
         self.image_size = config.image_size
         self.batch_size = config.batch_size
+        self.n_epoch = config.n_epoch
         self.learning_rate = config.learning_rate
         self.z_dim = config.z_dim
         
@@ -92,7 +94,7 @@ class DCGAN(object):
         tf.initialize_all_variables().run(session=self.sess)
         
         # reshape data for training
-        X_train = resize_data(data, self.image_size, self.image_size, self.C_dim, is_color)
+        X_train = resize_data(data, self.image_size, self.image_size, self.c_dim, self.is_color)
 
         sample_z = np.random.uniform(-1, 1, size=(self.sample_size , self.z_dim))
         sample_images = X_train[:self.sample_size]
@@ -112,10 +114,10 @@ class DCGAN(object):
         
         # train model
         count = 0
-        for epoch in tqdm(xrange(self.n_epoch)):
+        for epoch in tqdm(range(self.n_epoch)):
             batch_indices = len(X_train) // self.batch_size
             shuffle_idx = np.arange(batch_indices)
-            random.shuffle(shuffle_idx)
+            np.random.shuffle(shuffle_idx)
             batch_count = 0
             for idx in iter(shuffle_idx):
                 batch_count += 1
@@ -126,7 +128,7 @@ class DCGAN(object):
                 batch_z = np.random.uniform(-1, 1, [self.batch_size, self.z_dim]) \
                             .astype(np.float32)
                     
-                for _ in xrange(1):
+                for _ in range(1):
                     d_optim.run(session=self.sess, feed_dict={self.images: batch_images, self.z: batch_z})
                 g_optim.run(session=self.sess, feed_dict={self.z: batch_z})
                 
@@ -160,11 +162,7 @@ class DCGAN(object):
     def build_model(self):
         print ('build model ...')
         # we will use (self.output_size, self.output_size) picture as images
-        if self.is_color:
-            self.images = tf.placeholder(tf.float32, [None, self.image_size, self.image_size, self.c_dim],  name='real_images')
-        else:
-
-            self.images = tf.placeholder(tf.float32, [None, self.image_size, self.image_size], name='real_iamges')
+        self.images = tf.placeholder(tf.float32, [None, self.image_size, self.image_size, self.c_dim],  name='real_images')
         self.z = tf.placeholder(tf.float32, [None, self.z_dim], name='z')
         
         with tf.device(self.device):
@@ -272,12 +270,12 @@ class DCGAN(object):
         print(" [*] Reading checkpoints...")
 
         model_dir = "%s_%s_%s" % (self.dataset_name, self.batch_size, self.image_size)
-        checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
+        checkpoint_dir = join(checkpoint_dir, model_dir)
         try:
             ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
             if ckpt and ckpt.model_checkpoint_path:
-                ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
-                self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
+                ckpt_name = basename(ckpt.model_checkpoint_path)
+                self.saver.restore(self.sess, join(checkpoint_dir, ckpt_name))
                 return True
             else:
                 return False
