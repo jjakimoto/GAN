@@ -4,7 +4,7 @@ import numpy as np
 
 from config import DCGANconfig 
 from model import DCGAN
-from utils import get_data
+from utils import get_images
 
 import keras
 import tensorflow as tf

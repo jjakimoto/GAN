@@ -1,3 +1,4 @@
+import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Reshape
@@ -86,7 +87,7 @@ class DCGAN(object):
         with tf.device(self.device):
             d_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=0.5) \
                           .minimize(self.d_loss, var_list=self.D_logit.trainable_weights)
-            g_optim = tf.train.AdamOptimizer(self..learning_rate, beta1=0.5) \
+            g_optim = tf.train.AdamOptimizer(self.learning_rate, beta1=0.5) \
                           .minimize(self.g_loss, var_list=self.G.trainable_weights)
         tf.initialize_all_variables().run(session=self.sess)
         
@@ -122,7 +123,7 @@ class DCGAN(object):
                 batch = X_train[idx*self.batch_size:(idx + 1)*self.batch_size]
                 batch_images = np.array(batch).astype(np.float32)
 
-                batch_z = np.random.uniform(-1, 1, [self..batch_size, self.z_dim]) \
+                batch_z = np.random.uniform(-1, 1, [self.batch_size, self.z_dim]) \
                             .astype(np.float32)
                     
                 for _ in xrange(1):
@@ -154,7 +155,7 @@ class DCGAN(object):
                 Image.fromarray(image.astype(np.uint8)).save(join(self.save_img_dir, str(epoch)+".png"))
 
             if np.mod(epoch + 1, 5) == 0:
-                self.save(self..checkpoint_dir, epoch)
+                self.save(self.checkpoint_dir, epoch)
     
     def build_model(self):
         print ('build model ...')

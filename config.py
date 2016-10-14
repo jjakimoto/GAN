@@ -18,7 +18,7 @@ class DCGANConfig(object):
     checkpoint_dir='/path/to/your/checkpoint'
     save_img_dir='/path/to/your/save/directory'
 
-class mnistConfig(obejct):
+class mnistConfig(object):
     device='/gpu:0'
     sample_size = 64
     image_size =28 # shape == (image_size, image_size)
@@ -29,7 +29,7 @@ class mnistConfig(obejct):
     z_dim=100
     # if is_color is False c_dim is not necessary to specify
     is_color = False
-    dataset_name='sun'
+    dataset_name='mnist'
     learning_rate=2.0e-4
     batch_size = 128
     n_epoch=1000
