@@ -5,7 +5,7 @@ from os import listdir
 from os.path import join, isfile, isdir
 
 
-def get_images(image_dir='/home/tomoaki/work/DCGAN/lfw'):
+def get_images(image_dir='/path/to/your/images'):
     """get images from your local path"""
     images = []
     files = listdir(image_dir)
@@ -58,5 +58,6 @@ def resize_data(data, width, height, color_dim=None, is_color=True):
                                 if (len(d.shape)==2)])
         # transform from [0, 1] to [-1, 1]
         converted_data = (converted_data.astype(np.float32) - 0.5)/0.5
+        converted_data = converted_data.reshape(converted_data.shape + (1,))
 
     return converted_data
