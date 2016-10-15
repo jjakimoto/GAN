@@ -10,7 +10,7 @@ from config import mnistConfig
 from model import DCGAN
 from utils import get_images
 
-def main(data_path):
+def main(data_path=None):
     # config = DCGANConfig()
     config = mnistConfig()
     dcgan = DCGAN(config)
