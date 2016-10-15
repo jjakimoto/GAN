@@ -19,5 +19,5 @@ def main(data_path):
     data = mnist.train.images.reshape([-1, 28, 28])
     dcgan.train(data)
 
-if __name__ = '__main__':
+if __name__ == '__main__':
     main()
