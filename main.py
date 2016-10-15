@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
 # from config import DCGANconfig 
-from conig import mnistConfig
+from config import mnistConfig
 from model import DCGAN
 from utils import get_images
 
