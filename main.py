@@ -15,6 +15,7 @@ def main(data_path):
     config = mnistConfig()
     dcgan = DCGAN(config)
     # data = get_images(data_path)
+    mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
     data = mnist.train.images.reshape([-1, 28, 28])
     dcgan.train(data)
 
